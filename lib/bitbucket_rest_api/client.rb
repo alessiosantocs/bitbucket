@@ -27,8 +27,8 @@ module BitBucket
     end
 
     def pull_requests(options = {})
-      raise "Unimplemented"
-      #@pull_requests ||= ApiFactory.new 'PullRequests', options
+      # raise "Unimplemented"
+      @pull_requests ||= ApiFactory.new 'PullRequests', options
     end
 
     def repos(options = {})

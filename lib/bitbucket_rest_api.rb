@@ -75,6 +75,7 @@ module BitBucket
                :Repos           => 'repos',
                #:Error           => 'error',
                :Issues          => 'issues',
+               :PullRequests    => 'pull_requests',
                :User            => 'user',
                :Users           => 'users'
 
