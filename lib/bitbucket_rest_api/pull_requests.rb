@@ -6,27 +6,13 @@ module BitBucket
 
     # autoload_all 'bitbucket_rest_api/pull_requests'
 
-    VALID_ISSUE_PARAM_NAMES = %w[
-      title
-      content
-      component
-      milestone
-      version
-      responsible
-      priority
-      status
-      kind
-      limit
-      start
-      search
-      sort
-      reported_by
+    VALID_PULL_REQUEST_PARAM_NAMES = %w[
+      state
     ].freeze
 
-    VALID_ISSUE_PARAM_VALUES = {
-        'priority'    => %w[ trivial minor major critical blocker ],
-        'status'     => ['new', 'open', 'resolved', 'on hold', 'invalid', 'duplicate', 'wontfix'],
-        'kind'      => %w[ bug enhancement proposal task ]
+    VALID_PULL_REQUEST_PARAM_VALUES = {
+        # 'priority'    => %w[ trivial minor major critical blocker ],
+        'state'     => ['open', 'merged', 'declined'],
     }
 
     # Creates new PullRequests API
@@ -49,7 +35,7 @@ module BitBucket
       @milestones ||= ApiFactory.new 'Issues::Milestones'
     end
 
-    # List issues for a repository
+    # List pull requests for a repository
     #
     # = Inputs
     #  <tt>:limit</tt> - Optional - Number of issues to retrieve, default 15
@@ -68,23 +54,21 @@ module BitBucket
     #
     # = Examples
     #  bitbucket = BitBucket.new :user => 'user-name', :repo => 'repo-name'
-    #  bitbucket.issues.list_repo :filter => 'kind=bug&kind=enhancement'
+    #  bitbucket.pull_requests.list_repo :filter => 'state=merged'
     #
     def list_repo(user_name, repo_name, params={ })
       _update_user_repo_params(user_name, repo_name)
       _validate_user_repo_params(user, repo) unless user? && repo?
 
       normalize! params
-      filter! VALID_ISSUE_PARAM_NAMES, params
+      filter! VALID_PULL_REQUEST_PARAM_NAMES, params
       # _merge_mime_type(:issue, params)
-      assert_valid_values(VALID_ISSUE_PARAM_VALUES, params)
+      assert_valid_values(VALID_PULL_REQUEST_PARAM_VALUES, params)
 
-      response = get_request("/repositories/#{user}/#{repo.downcase}/pullrequests", params)
+      response = get_request("/repositories/#{user}/#{repo.downcase}/pullrequests", params, {endpoint: BitBucket::Configuration::DEFAULT_ENDPOINT_V2})
 
-      raise response.inspect
-
-      return response.issues unless block_given?
-      response.issues.each { |el| yield el }
+      return response.values unless block_given?
+      response.values.each { |el| yield el }
     end
 
     alias :list_repository :list_repo
@@ -170,7 +154,7 @@ module BitBucket
       normalize! params
       _merge_user_into_params!(params) unless params.has_key?('user')
       # _merge_mime_type(:issue, params)
-      filter! VALID_ISSUE_PARAM_NAMES, params
+      filter! VALID_PULL_REQUEST_PARAM_NAMES, params
       assert_required_keys(%w[ title ], params)
 
       post_request("/repositories/#{user}/#{repo.downcase}/issues/", params)
@@ -221,7 +205,7 @@ module BitBucket
 
       normalize! params
       # _merge_mime_type(:issue, params)
-      filter! VALID_ISSUE_PARAM_NAMES, params
+      filter! VALID_PULL_REQUEST_PARAM_NAMES, params
 
       put_request("/repositories/#{user}/#{repo.downcase}/issues/#{issue_id}/", params)
     end

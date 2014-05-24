@@ -89,6 +89,8 @@ module BitBucket
       clear_cache unless options.empty?
       puts "OPTIONS:#{conn_options.inspect}" if ENV['DEBUG']
 
+      conn_options.delete :endpoint
+      
       @connection ||= Faraday.new(conn_options.merge(:builder => stack(options)))
     end
 
