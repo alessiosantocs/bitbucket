@@ -8,6 +8,9 @@ module BitBucket
 
     VALID_PULL_REQUEST_PARAM_NAMES = %w[
       state
+      pagelen
+      sort
+      page
     ].freeze
 
     VALID_PULL_REQUEST_PARAM_VALUES = {
@@ -67,7 +70,7 @@ module BitBucket
 
       response = get_request("/repositories/#{user}/#{repo.downcase}/pullrequests", params, {endpoint: BitBucket::Configuration::DEFAULT_ENDPOINT_V2})
 
-      return response.values unless block_given?
+      return response unless block_given?
       response.values.each { |el| yield el }
     end
 
@@ -87,7 +90,7 @@ module BitBucket
       normalize! params
       # _merge_mime_type(:issue, params)
 
-      get_request("/repositories/#{user}/#{repo.downcase}/issues/#{issue_id}", params)
+      get_request("/repositories/#{user}/#{repo.downcase}/pullrequests/#{issue_id}", params)
     end
 
     alias :find :get
