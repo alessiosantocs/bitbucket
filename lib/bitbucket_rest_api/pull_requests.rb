@@ -76,21 +76,21 @@ module BitBucket
 
     alias :list_repository :list_repo
 
-    # Get a single issue
+    # Get a single pull_request
     #
     # = Examples
     #  bitbucket = BitBucket.new
-    #  bitbucket.issues.get 'user-name', 'repo-name', 'issue-id'
+    #  bitbucket.pull_requests.get 'user-name', 'repo-name', 'pull-request-id'
     #
-    def get(user_name, repo_name, issue_id, params={ })
+    def get(user_name, repo_name, pull_request_id, params={ })
       _update_user_repo_params(user_name, repo_name)
       _validate_user_repo_params(user, repo) unless user? && repo?
-      _validate_presence_of issue_id
+      _validate_presence_of pull_request_id
 
       normalize! params
       # _merge_mime_type(:issue, params)
 
-      get_request("/repositories/#{user}/#{repo.downcase}/pullrequests/#{issue_id}", params)
+      get_request("/repositories/#{user}/#{repo.downcase}/pullrequests/#{pull_request_id}", params, {endpoint: BitBucket::Configuration::DEFAULT_ENDPOINT_V2})
     end
 
     alias :find :get
