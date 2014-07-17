@@ -15,7 +15,7 @@ module BitBucket
 
     VALID_PULL_REQUEST_PARAM_VALUES = {
         # 'priority'    => %w[ trivial minor major critical blocker ],
-        'state'     => ['open', 'merged', 'declined'],
+        'state'     => ['OPEN', 'MERGED', 'DECLINED']
     }
 
     # Creates new PullRequests API
